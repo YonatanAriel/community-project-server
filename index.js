@@ -19,6 +19,6 @@ app.listen(PORT, () => {
   console.log(`i'm listening, http://localhost:${PORT}/`);
 });
 
-// app.get("/", (req, res) => {
-//   res.send("hello world!!!");
-// });
+app.get("/", (req, res) => {
+  res.send("hello world!!!");
+});
