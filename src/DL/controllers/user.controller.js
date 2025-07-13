@@ -1,5 +1,4 @@
-import { convertDBRowToUser } from "../../BL/utils/convertDBRowToUser";
-import { db } from "../DB";
+import { db } from "../DB.js";
 
 class UsersController {
   static create(data) {
@@ -30,18 +29,16 @@ class UsersController {
 
   static read(query = "SELECT * FROM users") {
     const statement = db.prepare(query);
-    const filteredRows = statement.all().filter((item) => item !== undefined);
-    const users = convertDBRowToUser(filteredRows);
-    return users;
+    const rows = statement.all();
+    return rows;
   }
 
   static readOne(identifier, value) {
     const statement = db.prepare(`SELECT * FROM users WHERE ${identifier} = ?`);
     const row = statement.get(value);
-    if (!row) return undefined;
-    const user = convertDBRowToUser(row);
-    return user;
+    return row;
   }
+
   static updateOne(data, id) {
     const statement = db.prepare(
       "UPDATE users SET user_name = COALESCE(?, user_name), password = COALESCE(?,password), email = COALESCE(?,email), photo_url = COALESCE(?,photo_url), preferred_language = COALESCE(?,preferred_language) WHERE id = ?"
@@ -60,18 +57,15 @@ class UsersController {
 
   static readWithParams(query, params) {
     const statement = db.prepare(query);
-    const filteredRows = statement
-      .all(...params)
-      .filter((item) => item !== undefined);
-    const users = convertDBRowToUser(filteredRows);
-    return users;
+    const rows = statement.all(...params);
+    return rows;
   }
 
   static delete(id) {
     const statement = db.prepare("UPDATE users SET is_active = 0 WHERE id = ?");
     const info = statement.run(id);
-    const haeDeleted = info.changes > 0;
-    return haeDeleted;
+    const hasDeleted = info.changes > 0;
+    return hasDeleted;
   }
 }
 

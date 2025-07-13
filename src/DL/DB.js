@@ -1,7 +1,6 @@
 import Database from "better-sqlite3";
 
-import { createUsersTable } from "./models/user";
-import UsersServices from "../BL/services/users.service";
+import { createUsersTable } from "./models/user.model.js";
 
 const db = new Database("community.db", { verbose: console.log });
 db.pragma("journal_mode = WAL");

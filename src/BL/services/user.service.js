@@ -1,4 +1,9 @@
-import UsersController from "../../DL/controllers/users.controller";
+import UsersController from "../../DL/controllers/user.controller.js";
+import {
+  comparePasswords,
+  createToken,
+  encryptPassword,
+} from "../utils/auth.js";
 
 class UsersServices {
   static getAllUsers = () => {
@@ -45,10 +50,6 @@ class UsersServices {
 
       const hashedPassword = encryptPassword(data.password);
       data.password = hashedPassword;
-
-      if (photoPath) {
-        data.photo = await uploadPhoto(photoPath);
-      }
 
       const userId = UsersController.create(data);
       if (!userId) return { error: "Error in creating user" };
