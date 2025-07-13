@@ -1,4 +1,17 @@
 {
+  "name": "community-project-server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "",
+    "build": "",
+    "prestart": "npm run build",
+    "start": "node index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
   "dependencies": {
     "bcrypt": "^6.0.0",
     "better-sqlite3": "^12.2.0",
