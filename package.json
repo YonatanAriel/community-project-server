@@ -3,11 +3,12 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "test": "",
     "build": "",
     "prestart": "npm run build",
-    "start": "node index.js"
+    "dev": "node index.js"
   },
   "keywords": [],
   "author": "",
