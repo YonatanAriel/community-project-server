@@ -1,4 +1,4 @@
-import { Database } from "better-sqlite3";
+import Database from "better-sqlite3";
 
 export const createUsersTable = (db) => {
   const query = `--sql
