@@ -3,6 +3,7 @@ import { db, initializeDB } from "./src/DL/DB.js";
 import { config } from "dotenv";
 import cors from "cors";
 import userRoutes from "./src/routes/user.route.js";
+import UsersController from "./src/DL/controllers/user.controller.js";
 
 const app = express();
 const dotenv = config();
