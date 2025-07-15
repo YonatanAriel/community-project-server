@@ -4,6 +4,8 @@ import { config } from "dotenv";
 import cors from "cors";
 import userRoutes from "./src/routes/user.route.js";
 import aiRecommendationsRoutes from "./src/routes/ai-recommendations.route.js";
+import connectionRequestsRoutes from "./src/routes/connection-requests.route.js";
+import connectionsRoutes from "./src/routes/connections.route.js";
 import UsersController from "./src/DL/controllers/user.controller.js";
 
 const app = express();
@@ -17,6 +19,8 @@ initializeDB();
 
 app.use("/users", userRoutes);
 app.use("/api/ai-recommendations", aiRecommendationsRoutes);
+app.use("/api/connection-requests", connectionRequestsRoutes);
+app.use("/api/connections", connectionsRoutes);
 
 app.listen(PORT, () => {
   console.log(`i'm listening, http://localhost:${PORT}/`);
