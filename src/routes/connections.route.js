@@ -7,12 +7,12 @@ router.get("/", async (req, res) => {
   try {
     const userId = req.user?.id || 1;
     const connections = await ConnectionService.getConnections(userId);
-    res({
+    res.json({
       success: true,
       data: connections,
     });
   } catch (error) {
-    return res.status(500)({
+    return res.status(500).json({
       success: false,
       message: "Error fetching connections",
     });
@@ -35,12 +35,12 @@ router.delete("/remove/:connectionId", async (req, res) => {
       error.message.includes("not found") ||
       error.message.includes("Not authorized")
     ) {
-      return res.status(400)({
+      return res.status(400).json({
         success: false,
         message: error.message,
       });
     }
-    return res.status(500)({
+    return res.status(500).json({
       success: false,
       message: "Error removing connection",
     });
