@@ -3,6 +3,7 @@ import { db, initializeDB } from "./src/DL/DB.js";
 import { config } from "dotenv";
 import cors from "cors";
 import userRoutes from "./src/routes/user.route.js";
+import aiRecommendationsRoutes from "./src/routes/ai-recommendations.route.js";
 import excelRoutes from "./src/routes/excel.route.js";
 import UsersController from "./src/DL/controllers/user.controller.js";
 
@@ -16,6 +17,7 @@ app.use(express.json());
 initializeDB();
 
 app.use("/users", userRoutes);
+app.use("/api/ai-recommendations", aiRecommendationsRoutes);
 app.use("/api/excel", excelRoutes);
 
 app.listen(PORT, () => {
