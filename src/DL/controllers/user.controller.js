@@ -2,70 +2,73 @@ import { db } from "../DB.js";
 
 class UsersController {
   static create(data) {
-    const columns = ["user_name", "password", "client_id", "is_active"];
-    const values = [data.userName, data.password, data.clientId, 1];
-    if (data.email) {
-      columns.push("email");
-      values.push(data.email);
+    const columns = ["full_name", "email"];
+    const values = [data.fullName || data.full_name, data.email];
+
+    // Optional fields from your model
+    if (data.linkedinUrl || data.linkedin_url) {
+      columns.push("linkedin_url");
+      values.push(data.linkedinUrl || data.linkedin_url);
     }
-    if (data.photo) {
-      columns.push("photo_url");
-      values.push(data.photo);
+    if (data.profileImageUrl || data.profile_image_url) {
+      columns.push("profile_image_url");
+      values.push(data.profileImageUrl || data.profile_image_url);
     }
-    if (data.preferredLanguage) {
-      columns.push("preferred_language");
-      values.push(data.preferredLanguage);
+    if (data.isAdmin !== undefined || data.is_admin !== undefined) {
+      columns.push("is_admin");
+      values.push(data.isAdmin ?? data.is_admin ?? 0);
     }
 
     const statement = db.prepare(
-      `INSERT INTO users (${columns.join(", ")}) VALUES (${columns.map(
-        (column) => "?"
-      )})`
+      `INSERT INTO users (${columns.join(", ")}) VALUES (${columns
+        .map(() => "?")
+        .join(", ")})`
     );
     const info = statement.run(...values);
-    const rowId = info.lastInsertRowid;
-    return rowId;
+    return info.lastInsertRowid;
   }
 
   static read(query = "SELECT * FROM users") {
     const statement = db.prepare(query);
-    const rows = statement.all();
-    return rows;
+    return statement.all();
   }
 
   static readOne(identifier, value) {
     const statement = db.prepare(`SELECT * FROM users WHERE ${identifier} = ?`);
-    const row = statement.get(value);
-    return row;
+    return statement.get(value);
   }
 
   static updateOne(data, id) {
-    const statement = db.prepare(
-      "UPDATE users SET user_name = COALESCE(?, user_name), password = COALESCE(?,password), email = COALESCE(?,email), photo_url = COALESCE(?,photo_url), preferred_language = COALESCE(?,preferred_language) WHERE id = ?"
-    );
+    const statement = db.prepare(`
+      UPDATE users SET 
+        full_name = COALESCE(?, full_name),
+        email = COALESCE(?, email),
+        linkedin_url = COALESCE(?, linkedin_url),
+        profile_image_url = COALESCE(?, profile_image_url),
+        is_admin = COALESCE(?, is_admin)
+      WHERE id = ?
+    `);
+
     const info = statement.run(
-      data.userName ?? null,
-      data.password ?? null,
-      data.email ?? null,
-      data.photo ?? null,
-      data.preferredLanguage ?? null,
+      data.fullName || data.full_name || null,
+      data.email || null,
+      data.linkedinUrl || data.linkedin_url || null,
+      data.profileImageUrl || data.profile_image_url || null,
+      data.isAdmin ?? data.is_admin ?? null,
       id
     );
-    const hasUpdated = info.changes > 0;
-    return hasUpdated;
+    return info.changes > 0;
   }
 
   static readWithParams(query, params) {
     const statement = db.prepare(query);
-    const rows = statement.all(...params);
-    return rows;
+    return statement.all(...params);
   }
 
   static delete(id) {
-    const statement = db.prepare("UPDATE users SET is_active = 0 WHERE id = ?");
+    const statement = db.prepare("DELETE FROM users WHERE id = ?");
     const info = statement.run(id);
-    const hasDeleted = info.changes > 0;
-    return hasDeleted;
+    return info.changes > 0;
   }
 }
 
