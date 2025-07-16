@@ -6,6 +6,7 @@ export const createUsersTable = (db) => {
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       full_name TEXT,
       email TEXT UNIQUE,
+      password TEXT,
       linkedin_url TEXT,
       profile_image_url TEXT,
       is_admin BOOLEAN DEFAULT 0,
