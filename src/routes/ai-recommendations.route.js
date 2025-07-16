@@ -3,8 +3,11 @@ import GeminiService from "../BL/services/gemini.service.js";
 import RequestValidator from "../BL/utils/requestValidator.js";
 import RecommendationBuilder from "../BL/services/recommendationBuilder.service.js";
 import ErrorHandler from "../BL/utils/errorHandler.js";
+import { authenticateToken } from "../BL/utils/auth.js";
 
 const router = express.Router();
+
+router.use(authenticateToken);
 
 router.post("/", async (req, res) => {
   try {

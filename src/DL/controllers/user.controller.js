@@ -5,7 +5,10 @@ class UsersController {
     const columns = ["full_name", "email"];
     const values = [data.fullName || data.full_name, data.email];
 
-    // Optional fields from your model
+    if (data.password) {
+      columns.push("password");
+      values.push(data.password);
+    }
     if (data.linkedinUrl || data.linkedin_url) {
       columns.push("linkedin_url");
       values.push(data.linkedinUrl || data.linkedin_url);

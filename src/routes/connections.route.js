@@ -1,11 +1,14 @@
 import express from "express";
 import ConnectionService from "../BL/services/connection.service.js";
+import { authenticateToken } from "../BL/utils/auth.js";
 
 const router = express.Router();
 
+router.use(authenticateToken);
+
 router.get("/", async (req, res) => {
   try {
-    const userId = req.user?.id || 1;
+    const userId = req.user.id;
     const connections = await ConnectionService.getConnections(userId);
     res.json({
       success: true,
@@ -21,7 +24,7 @@ router.get("/", async (req, res) => {
 
 router.delete("/remove/:connectionId", async (req, res) => {
   try {
-    const userId = req.user?.id || 1;
+    const userId = req.user.id;
     const connectionId = parseInt(req.params.connectionId);
 
     await ConnectionService.removeConnection(connectionId, userId);

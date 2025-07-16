@@ -1,11 +1,14 @@
 import express from "express";
 import ConnectionService from "../BL/services/connection.service.js";
+import { authenticateToken } from "../BL/utils/auth.js";
 
 const router = express.Router();
 
+router.use(authenticateToken);
+
 router.get("/", async (req, res) => {
   try {
-    const userId = req.user?.id || 1;
+    const userId = req.user.id;
     const requests = await ConnectionService.getConnectionRequests(userId);
     res.json({
       success: true,
@@ -21,7 +24,7 @@ router.get("/", async (req, res) => {
 
 router.post("/", async (req, res) => {
   try {
-    const fromUserId = req.user?.id || 1;
+    const fromUserId = req.user.id;
     const { to_user_id, reason } = req.body;
 
     if (!to_user_id || !reason) {
@@ -61,7 +64,7 @@ router.post("/", async (req, res) => {
 
 router.put("/accept/:requestId", async (req, res) => {
   try {
-    const userId = req.user?.id || 1;
+    const userId = req.user.id;
     const requestId = parseInt(req.params.requestId);
 
     const updatedRequest = await ConnectionService.acceptConnectionRequest(
@@ -94,7 +97,7 @@ router.put("/accept/:requestId", async (req, res) => {
 
 router.put("/reject/:requestId", async (req, res) => {
   try {
-    const userId = req.user?.id || 1;
+    const userId = req.user.id;
     const requestId = parseInt(req.params.requestId);
 
     await ConnectionService.rejectConnectionRequest(requestId, userId);
