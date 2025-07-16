@@ -1,4 +1,6 @@
 import { config } from "dotenv";
+config();
+
 import { db, initializeDB } from "./src/DL/DB.js";
 import express from "express";
 import cors from "cors";
@@ -11,12 +13,13 @@ import UsersController from "./src/DL/controllers/user.controller.js";
 import axios from "axios";
 
 const app = express();
-const dotenv = config();
 const PORT = process.env.PORT || 4000;
 
-app.use(cors({
-  origin: 'http://localhost:5173'
-}));
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+  })
+);
 app.use(express.json());
 
 initializeDB();
