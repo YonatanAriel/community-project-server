@@ -1,9 +1,5 @@
 import UsersController from "../../DL/controllers/user.controller.js";
-import {
-  comparePasswords,
-  createToken,
-  encryptPassword,
-} from "../utils/auth.js";
+import { comparePasswords, createToken } from "../utils/auth.js";
 
 class UsersServices {
   static getAllUsers = () => {
@@ -16,50 +12,43 @@ class UsersServices {
     return user;
   };
 
-  static getUserByUserName = (userName) => {
-    const user = UsersController.readOne("user_name", userName);
+  static getUserByEmail = (email) => {
+    const user = UsersController.readOne("email", email);
     return user;
   };
 
   static signIn = (data) => {
     try {
-      if (!data.userName || !data.password) return { error: "Missing data" };
-      const user = this.getUserByUserName(data.userName);
+      if (!data.email || !data.password) {
+        return { error: "Email and password are required" };
+      }
 
-      if (!user || !user.password)
-        return { error: "Wrong username or password" };
+      const user = this.getUserByEmail(data.email);
+      if (!user || !user.password) return { error: "Wrong email or password" };
 
       const isPasswordMatch = comparePasswords(data.password, user.password);
-      if (!isPasswordMatch) return { error: "Wrong username or password" };
+      if (!isPasswordMatch) return { error: "Wrong email or password" };
 
-      const userId = user?.id;
-      const token = createToken({ userName: data.userName });
-      return { token, userId };
+      const token = createToken({
+        id: user.id,
+        email: user.email,
+        is_admin: user.is_admin,
+      });
+      return {
+        token,
+        userId: user.id,
+        user: {
+          id: user.id,
+          full_name: user.full_name,
+          email: user.email,
+          is_admin: user.is_admin,
+        },
+      };
     } catch (error) {
       console.log(error);
+      return { error: "Server error" };
     }
   };
-
-  static async signUp(data, photoPath) {
-    try {
-      if (!data.userName || !data.password || !data.clientId)
-        return { error: "Missing data" };
-
-      const isUserNameTaken = this.getUserByUserName(data.userName);
-      if (isUserNameTaken) return { error: "User name already taken" };
-
-      const hashedPassword = encryptPassword(data.password);
-      data.password = hashedPassword;
-
-      const userId = UsersController.create(data);
-      if (!userId) return { error: "Error in creating user" };
-
-      const token = createToken({ userName: data.userName });
-      return { token, userId };
-    } catch (err) {
-      console.log(err);
-    }
-  }
 }
 
 export default UsersServices;
