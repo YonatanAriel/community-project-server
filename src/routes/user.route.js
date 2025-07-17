@@ -22,4 +22,13 @@ router.post("/sign-in", (req, res) => {
   }
 });
 
+router.get("/full-data", authenticateToken, requireAdmin, (req, res) => {
+  try {
+    const profiles = usersServices.getUserProfiles();
+    res.json(profiles);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
 export default router;
