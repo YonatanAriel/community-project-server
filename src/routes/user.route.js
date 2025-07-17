@@ -21,8 +21,8 @@ router.post("/sign-in", (req, res) => {
     res.status(400).json({ error: err.message });
   }
 });
-
-router.get("/full-data", authenticateToken, requireAdmin, (req, res) => {
+// authenticateToken, requireAdmin,
+router.get("/full-data", (req, res) => {
   try {
     const profiles = usersServices.getUserProfiles();
     res.json(profiles);
