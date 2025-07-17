@@ -1,4 +1,8 @@
 import { db } from "../DB.js";
+import {
+  parseMatchingProfileRow,
+  parseMatchingProfileRows,
+} from "../../BL/utils/jsonParser.js";
 
 class MatchingProfilesController {
   static create(data) {
@@ -57,18 +61,7 @@ class MatchingProfilesController {
   static read(query = "SELECT * FROM matching_profiles") {
     const statement = db.prepare(query);
     const rows = statement.all();
-
-    // Parse JSON fields
-    return rows.map((row) => ({
-      ...row,
-      skills: row.skills ? JSON.parse(row.skills) : [],
-      interests: row.interests ? JSON.parse(row.interests) : [],
-      job_titles: row.job_titles ? JSON.parse(row.job_titles) : [],
-      industries: row.industries ? JSON.parse(row.industries) : [],
-      custom_keywords: row.custom_keywords
-        ? JSON.parse(row.custom_keywords)
-        : [],
-    }));
+    return parseMatchingProfileRows(rows);
   }
 
   static readOne(identifier, value) {
@@ -76,20 +69,7 @@ class MatchingProfilesController {
       `SELECT * FROM matching_profiles WHERE ${identifier} = ?`
     );
     const row = statement.get(value);
-
-    if (!row) return null;
-
-    // Parse JSON fields
-    return {
-      ...row,
-      skills: row.skills ? JSON.parse(row.skills) : [],
-      interests: row.interests ? JSON.parse(row.interests) : [],
-      job_titles: row.job_titles ? JSON.parse(row.job_titles) : [],
-      industries: row.industries ? JSON.parse(row.industries) : [],
-      custom_keywords: row.custom_keywords
-        ? JSON.parse(row.custom_keywords)
-        : [],
-    };
+    return parseMatchingProfileRow(row);
   }
 
   static updateOne(data, userId) {
@@ -158,17 +138,7 @@ class MatchingProfilesController {
       searchPattern
     );
 
-    // Parse JSON fields
-    return rows.map((row) => ({
-      ...row,
-      skills: row.skills ? JSON.parse(row.skills) : [],
-      interests: row.interests ? JSON.parse(row.interests) : [],
-      job_titles: row.job_titles ? JSON.parse(row.job_titles) : [],
-      industries: row.industries ? JSON.parse(row.industries) : [],
-      custom_keywords: row.custom_keywords
-        ? JSON.parse(row.custom_keywords)
-        : [],
-    }));
+    return parseMatchingProfileRows(rows);
   }
 
   static getOpenToConnect() {
@@ -176,35 +146,13 @@ class MatchingProfilesController {
       "SELECT * FROM matching_profiles WHERE open_to_connect = 1"
     );
     const rows = statement.all();
-
-    // Parse JSON fields
-    return rows.map((row) => ({
-      ...row,
-      skills: row.skills ? JSON.parse(row.skills) : [],
-      interests: row.interests ? JSON.parse(row.interests) : [],
-      job_titles: row.job_titles ? JSON.parse(row.job_titles) : [],
-      industries: row.industries ? JSON.parse(row.industries) : [],
-      custom_keywords: row.custom_keywords
-        ? JSON.parse(row.custom_keywords)
-        : [],
-    }));
+    return parseMatchingProfileRows(rows);
   }
 
   static readWithParams(query, params) {
     const statement = db.prepare(query);
     const rows = statement.all(...params);
-
-    // Parse JSON fields
-    return rows.map((row) => ({
-      ...row,
-      skills: row.skills ? JSON.parse(row.skills) : [],
-      interests: row.interests ? JSON.parse(row.interests) : [],
-      job_titles: row.job_titles ? JSON.parse(row.job_titles) : [],
-      industries: row.industries ? JSON.parse(row.industries) : [],
-      custom_keywords: row.custom_keywords
-        ? JSON.parse(row.custom_keywords)
-        : [],
-    }));
+    return parseMatchingProfileRows(rows);
   }
 
   static delete(userId) {
