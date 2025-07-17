@@ -72,7 +72,7 @@ router.put("/accept/:requestId", async (req, res) => {
       userId
     );
 
-    res({
+    res.json({
       success: true,
       data: updatedRequest,
       message: "Connection request accepted successfully",
@@ -102,7 +102,7 @@ router.put("/reject/:requestId", async (req, res) => {
 
     await ConnectionService.rejectConnectionRequest(requestId, userId);
 
-    res({
+    res.json({
       success: true,
       message: "Connection request rejected and deleted successfully",
     });

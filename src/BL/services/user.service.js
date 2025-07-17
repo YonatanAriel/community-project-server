@@ -17,6 +17,38 @@ class UsersServices {
     return user;
   };
 
+  static getUserProfiles = () => {
+    const query = `
+      SELECT 
+        u.id,
+        u.full_name,
+        u.email,
+        u.profile_image_url,
+        mp.skills,
+        mp.interests,
+        mp.job_titles,
+        mp.industries,
+        mp.summary
+      FROM users u
+      LEFT JOIN matching_profiles mp ON u.id = mp.user_id
+      WHERE mp.user_id IS NOT NULL
+    `;
+
+    const profiles = UsersController.readWithParams(query, []);
+
+    return profiles.map((profile) => ({
+      id: profile.id,
+      user_name: profile.full_name,
+      email: profile.email,
+      photo_url: profile.profile_image_url,
+      skills: profile.skills ? JSON.parse(profile.skills) : [],
+      interests: profile.interests ? JSON.parse(profile.interests) : [],
+      job_titles: profile.job_titles ? JSON.parse(profile.job_titles) : [],
+      industries: profile.industries ? JSON.parse(profile.industries) : [],
+      summary: profile.summary || "",
+    }));
+  };
+
   static signIn = (data) => {
     try {
       if (!data.email || !data.password) {
