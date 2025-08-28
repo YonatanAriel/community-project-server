@@ -1,33 +1,3 @@
----
-post_title: Community Project Server
-author1: Yonatan Ariel
-post_slug: community-project-server
-: yonat
-featured_image: https://example.com/featured-image.png
-categories:
-  - Node.js
-  - Backend
-  - API
-  - Community
-  - Database
-  - AI
-  - Express
-  - SQLite
-  - Authentication
-tags:
-  - nodejs
-  - express
-  - sqlite
-  - ai
-  - backend
-  - api
-  - authentication
-  - recommendations
-ai_note: true
-summary: "A Node.js backend server for managing a community platform, featuring user authentication, AI-powered recommendations, and SQLite database integration."
-post_date: 2025-08-28
----
-
 # Community Project Server
 
 <p align="center">
