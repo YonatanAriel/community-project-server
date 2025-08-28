@@ -601,7 +601,7 @@ graph LR
 ### 🔑 JWT Authentication Flow
 
 ```mermaid
-sequenceDigram
+sequenceDiagram
     participant C as Client
     participant S as Server
     participant DB as Database
