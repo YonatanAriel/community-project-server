@@ -29,7 +29,7 @@ router.delete("/remove/:connectionId", async (req, res) => {
 
     await ConnectionService.removeConnection(connectionId, userId);
 
-    res({
+    res.json({
       success: true,
       message: "Connection removed successfully",
     });

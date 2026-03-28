@@ -21,5 +21,14 @@ router.post("/sign-in", (req, res) => {
     res.status(400).json({ error: err.message });
   }
 });
+// authenticateToken, requireAdmin,
+router.get("/full-data", (req, res) => {
+  try {
+    const profiles = usersServices.getUserProfiles();
+    res.json(profiles);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
 
 export default router;

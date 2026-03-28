@@ -5,7 +5,23 @@ class ConnectionService {
   static async getConnectionRequests(userId) {
     try {
       const requests = ConnectionRequestsController.getByUserId(userId);
-      return requests;
+      const enrichedRequests = ConnectionRequestsController.readWithParams(
+        `
+        SELECT cr.*, 
+               u1.full_name as from_user_name,
+               u1.profile_image_url as from_user_image,
+               u2.full_name as to_user_name,
+               u2.profile_image_url as to_user_image
+        FROM connection_requests cr
+        JOIN users u1 ON cr.from_user_id = u1.id
+        JOIN users u2 ON cr.to_user_id = u2.id
+        WHERE cr.from_user_id = ? OR cr.to_user_id = ?
+        ORDER BY cr.requested_at DESC
+      `,
+        [userId, userId]
+      );
+
+      return enrichedRequests;
     } catch (error) {
       console.error("Error fetching connection requests:", error);
       throw error;
@@ -93,9 +109,21 @@ class ConnectionService {
   static async getConnections(userId) {
     try {
       const connections = ConnectionRequestsController.readWithParams(
-        "SELECT * FROM connection_requests WHERE (from_user_id = ? OR to_user_id = ?) AND status = 'accepted'",
+        `
+        SELECT cr.*, 
+               u1.full_name as from_user_name,
+               u1.profile_image_url as from_user_image,
+               u2.full_name as to_user_name,
+               u2.profile_image_url as to_user_image
+        FROM connection_requests cr
+        JOIN users u1 ON cr.from_user_id = u1.id
+        JOIN users u2 ON cr.to_user_id = u2.id
+        WHERE (cr.from_user_id = ? OR cr.to_user_id = ?) AND cr.status = 'accepted'
+        ORDER BY cr.responded_at DESC
+      `,
         [userId, userId]
       );
+
       return connections;
     } catch (error) {
       console.error("Error fetching connections:", error);
