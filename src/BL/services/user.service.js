@@ -1,4 +1,5 @@
-import UsersController from "../../DL/controllers/users.controller";
+import UsersController from "../../DL/controllers/user.controller.js";
+import { comparePasswords, createToken } from "../utils/auth.js";
 
 class UsersServices {
   static getAllUsers = () => {
@@ -11,54 +12,75 @@ class UsersServices {
     return user;
   };
 
-  static getUserByUserName = (userName) => {
-    const user = UsersController.readOne("user_name", userName);
+  static getUserByEmail = (email) => {
+    const user = UsersController.readOne("email", email);
     return user;
+  };
+
+  static getUserProfiles = () => {
+    const query = `
+      SELECT 
+        u.id,
+        u.full_name,
+        u.email,
+        u.profile_image_url,
+        mp.skills,
+        mp.interests,
+        mp.job_titles,
+        mp.industries,
+        mp.summary
+      FROM users u
+      LEFT JOIN matching_profiles mp ON u.id = mp.user_id
+      WHERE mp.user_id IS NOT NULL
+    `;
+
+    const profiles = UsersController.readWithParams(query, []);
+
+    return profiles.map((profile) => ({
+      id: profile.id,
+      user_name: profile.full_name,
+      email: profile.email,
+      photo_url: profile.profile_image_url,
+      skills: profile.skills ? JSON.parse(profile.skills) : [],
+      interests: profile.interests ? JSON.parse(profile.interests) : [],
+      job_titles: profile.job_titles ? JSON.parse(profile.job_titles) : [],
+      industries: profile.industries ? JSON.parse(profile.industries) : [],
+      summary: profile.summary || "",
+    }));
   };
 
   static signIn = (data) => {
     try {
-      if (!data.userName || !data.password) return { error: "Missing data" };
-      const user = this.getUserByUserName(data.userName);
-
-      if (!user || !user.password)
-        return { error: "Wrong username or password" };
-
-      const isPasswordMatch = comparePasswords(data.password, user.password);
-      if (!isPasswordMatch) return { error: "Wrong username or password" };
-
-      const userId = user?.id;
-      const token = createToken({ userName: data.userName });
-      return { token, userId };
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  static async signUp(data, photoPath) {
-    try {
-      if (!data.userName || !data.password || !data.clientId)
-        return { error: "Missing data" };
-
-      const isUserNameTaken = this.getUserByUserName(data.userName);
-      if (isUserNameTaken) return { error: "User name already taken" };
-
-      const hashedPassword = encryptPassword(data.password);
-      data.password = hashedPassword;
-
-      if (photoPath) {
-        data.photo = await uploadPhoto(photoPath);
+      if (!data.email || !data.password) {
+        return { error: "Email and password are required" };
       }
 
-      const userId = UsersController.create(data);
-      if (!userId) return { error: "Error in creating user" };
+      const user = this.getUserByEmail(data.email);
+      if (!user || !user.password) return { error: "Wrong email or password" };
 
-      const token = createToken({ userName: data.userName });
-      return { token, userId };
-    } catch (err) {
-      console.log(err);
+      const isPasswordMatch = comparePasswords(data.password, user.password);
+      if (!isPasswordMatch) return { error: "Wrong email or password" };
+
+      const token = createToken({
+        id: user.id,
+        email: user.email,
+        is_admin: user.is_admin,
+      });
+      return {
+        token,
+        userId: user.id,
+        user: {
+          id: user.id,
+          full_name: user.full_name,
+          email: user.email,
+          is_admin: user.is_admin,
+        },
+      };
+    } catch (error) {
+      console.log(error);
+      return { error: "Server error" };
     }
-  }
+  };
 }
 
 export default UsersServices;

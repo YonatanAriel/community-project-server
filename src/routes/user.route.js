@@ -1,35 +1,34 @@
 import express from "express";
-import usersServices from "../BL/services/users.service";
-const router = express.Router();
-// const {verify} = require("../auth")
+import usersServices from "../BL/services/user.service.js";
+import { authenticateToken, requireAdmin } from "../BL/utils/auth.js";
 
-router.get("/", (req, res) => {
+const router = express.Router();
+
+router.get("/", authenticateToken, requireAdmin, (req, res) => {
   try {
     const allUsers = usersServices.getAllUsers();
-    res.send(allUsers);
+    res.json(allUsers);
   } catch (err) {
-    res.sendStatus(400).send(err);
+    res.status(400).json({ error: err.message });
   }
 });
 
 router.post("/sign-in", (req, res) => {
   try {
     const response = usersServices.signIn(req.body);
-    res.send(response);
+    res.json(response);
   } catch (err) {
-    res.sendStatus(400).send(err);
+    res.status(400).json({ error: err.message });
   }
 });
-
-router.post("/sign-up", upload.single("photo"), async (req, res) => {
+// authenticateToken, requireAdmin,
+router.get("/full-data", (req, res) => {
   try {
-    const photoPath = req.file?.path;
-    const response = await usersServices.signUp(req.body, photoPath);
-    res.send(response);
+    const profiles = usersServices.getUserProfiles();
+    res.json(profiles);
   } catch (err) {
-    console.log(err);
-    res.sendStatus(400).send(err);
+    res.status(400).json({ error: err.message });
   }
 });
 
-module.exports = router;
+export default router;
